@@ -1,4 +1,3 @@
-```kotlin
 package com.example.myapp
 
 import android.Manifest
@@ -452,4 +451,3 @@ class MainActivity : Activity() {
         super.onDestroy()
     }
 }
-```
