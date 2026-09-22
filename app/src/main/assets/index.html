@@ -1,0 +1,263 @@
+```html
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>WebViewアプリ</title>
+
+    <style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            padding: 24px;
+            font-family:
+                -apple-system,
+                BlinkMacSystemFont,
+                "Helvetica Neue",
+                sans-serif;
+            background: #f2f2f7;
+            color: #1c1c1e;
+        }
+
+        h1 {
+            margin-top: 20px;
+            font-size: 28px;
+        }
+
+        p {
+            line-height: 1.7;
+        }
+
+        button {
+            display: block;
+            width: 100%;
+            margin: 12px 0;
+            padding: 16px;
+            border: none;
+            border-radius: 14px;
+            background: #007aff;
+            color: #ffffff;
+            font-size: 17px;
+            font-weight: 600;
+        }
+
+        button:active {
+            opacity: 0.7;
+        }
+
+        .card {
+            margin-top: 20px;
+            padding: 18px;
+            border-radius: 16px;
+            background: #ffffff;
+        }
+
+        video {
+            display: none;
+            width: 100%;
+            margin-top: 16px;
+            border-radius: 14px;
+            background: #000000;
+        }
+
+        #location {
+            white-space: pre-line;
+            line-height: 1.7;
+        }
+
+        a {
+            color: #007aff;
+            text-decoration: none;
+        }
+    </style>
+</head>
+
+<body>
+
+    <h1>WebViewアプリ</h1>
+
+    <p>
+        カメラや位置情報などの機能を確認できます。
+    </p>
+
+    <div class="card">
+
+        <button onclick="useCamera()">
+            📷 カメラを使用する
+        </button>
+
+        <button onclick="useLocation()">
+            📍 位置情報を取得する
+        </button>
+
+    </div>
+
+    <div class="card">
+
+        <h2>カメラ</h2>
+
+        <video
+            id="camera"
+            autoplay
+            playsinline>
+        </video>
+
+    </div>
+
+    <div class="card">
+
+        <h2>位置情報</h2>
+
+        <div id="location">
+            位置情報：未取得
+        </div>
+
+    </div>
+
+    <div class="card">
+
+        <h2>外部リンク</h2>
+
+        <p>
+            外部サイトを開くリンクです。
+        </p>
+
+        <p>
+            <a
+                href="https://www.google.com/">
+                Googleを開く
+            </a>
+        </p>
+
+    </div>
+
+    <script>
+
+        /*
+         * カメラ
+         *
+         * Android側のMainActivity.ktが
+         * アプリ独自の確認を表示します。
+         */
+        async function useCamera() {
+
+            try {
+
+                if (
+                    !navigator.mediaDevices ||
+                    !navigator.mediaDevices.getUserMedia
+                ) {
+                    alert(
+                        "この環境ではカメラを使用できません。"
+                    );
+
+                    return;
+                }
+
+                const stream =
+                    await navigator.mediaDevices.getUserMedia({
+                        video: true,
+                        audio: false
+                    });
+
+                const video =
+                    document.getElementById("camera");
+
+                video.srcObject = stream;
+                video.style.display = "block";
+
+            } catch (error) {
+
+                console.log(
+                    "カメラ使用エラー:",
+                    error
+                );
+
+                alert(
+                    "カメラを使用できませんでした。"
+                );
+            }
+        }
+
+
+        /*
+         * 位置情報
+         *
+         * Android側のMainActivity.ktが
+         * アプリ独自の確認を表示します。
+         */
+        function useLocation() {
+
+            if (!navigator.geolocation) {
+
+                alert(
+                    "この端末では位置情報を利用できません。"
+                );
+
+                return;
+            }
+
+            document.getElementById(
+                "location"
+            ).textContent =
+                "位置情報を取得しています……";
+
+
+            navigator.geolocation.getCurrentPosition(
+
+                function(position) {
+
+                    const latitude =
+                        position.coords.latitude;
+
+                    const longitude =
+                        position.coords.longitude;
+
+                    const accuracy =
+                        position.coords.accuracy;
+
+                    document.getElementById(
+                        "location"
+                    ).textContent =
+                        "緯度: " +
+                        latitude +
+                        "\n経度: " +
+                        longitude +
+                        "\n精度: 約" +
+                        Math.round(accuracy) +
+                        "m";
+                },
+
+                function(error) {
+
+                    console.log(
+                        "位置情報取得エラー:",
+                        error
+                    );
+
+                    document.getElementById(
+                        "location"
+                    ).textContent =
+                        "位置情報を取得できませんでした。";
+                },
+
+                {
+                    enableHighAccuracy: true,
+                    timeout: 10000,
+                    maximumAge: 0
+                }
+            );
+        }
+
+    </script>
+
+</body>
+
+</html>
+```
